@@ -166,6 +166,9 @@ check_static_extents_representability() {
   // get rid of NVCC warning "pointless comparison of unsigned integer with zero"
   if constexpr ( Extents::rank() > 0 ) {
     auto prod = index_type(1);
+#ifdef __NEXTSILICON__
+#pragma clang loop unroll(full)
+#endif
     for (size_t i = 0; i < Extents::rank(); ++i) {
       if (Extents::static_extent(i) == dynamic_extent)
         continue;
@@ -188,6 +191,9 @@ check_extents_representability(const Extents &exts) {
   // get rid of NVCC warning "pointless comparison of unsigned integer with zero"
   if constexpr ( Extents::rank() > 0 ) {
     auto prod = index_type(1);
+#ifdef __NEXTSILICON__
+#pragma clang loop unroll(full)
+#endif
     for (size_t i = 0; i < Extents::rank(); ++i) {
       if (!check_mul_result_is_nonnegative_and_representable(
               prod, static_cast<index_type>(exts.extent(i))))
@@ -286,6 +292,9 @@ check_extents_and_right_padding_representability(const Extents &exts,
   // And also a rank 1 layout cannot overflow
   if constexpr ( Extents::rank() > 1 ) {
     auto prod = static_cast<CheckType>(dynamic_padding_value);
+#ifdef __NEXTSILICON__
+#pragma clang loop unroll(full)
+#endif
     for (size_t i = 0; i < Extents::rank() - 1; ++i) {
       if (!check_mul_result_is_nonnegative_and_representable(prod, static_cast< CheckType >(exts.extent(i))))
         return false;
@@ -965,6 +974,9 @@ public:
       return exts.extent(0);
     } else {
       index_type value = padded_stride.value(0);
+#ifdef __NEXTSILICON__
+#pragma clang loop unroll(full)
+#endif
       for (rank_type r = 0; r < extent_to_pad_idx; ++r) {
         value *= exts.extent(r);
       }
